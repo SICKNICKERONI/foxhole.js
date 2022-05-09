@@ -52,4 +52,7 @@ foxhole.getMaps().then((maps) => {
 
 ## Extra Information
 
+Please contact me on Discord, make an issue, or make a pull request if you run into any problems using this.
+Discord: SICKNICKERONI#2437
+
 *This project is in an early state and I plan to update this quite frequently.*
