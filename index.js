@@ -52,9 +52,8 @@ class FoxholeAPI {
         const promise = new Promise((resolve) => {
             this.getMaps().then(async (maps) => {
                 for (const map of maps) {
-                    const etag = Object.hasOwn(data.maps[map], 'etag') ? data.maps[map].etag : '';
+                    const etag = Object.hasOwn(data.maps, map.etag) ? data.maps[map].etag : '';
                     const response = await fetch(`${this.rootURL}/worldconquest/warReport/${map}`, { headers: { 'If-None-Match': etag }});
-                    console.log(response.status);
                     if (response.status === 200) {
                         const { wardenCasualties, colonialCasualties } = await response.json();
                     
