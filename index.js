@@ -43,6 +43,30 @@ class FoxholeAPI {
     }
 
     /**
+     * @param {string} map Map name you want data from.
+     * 
+     * This returns map data that may change throughout the war's cycle.
+     */
+    async getDynamicMapData(map) {
+        const response = await fetch(`${this.rootURL}/worldconquest/maps/${map}/dynamic/public`);
+        const data =  await response.json();
+
+        return data;
+    }
+
+    /**
+     * @param {string} map Map name you want data from.
+     * 
+     * This returns map data that wont change throughout the war's cycle.
+     */
+    async getStaticMapData(map) {
+        const response = await fetch(`${this.rootURL}/worldconquest/maps/${map}/static`);
+        const data = await response.json();
+
+        return data;
+    }
+
+    /**
      * This returns a promise containing data for casualties.
      */
     getCasualties() {
