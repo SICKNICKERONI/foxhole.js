@@ -98,7 +98,7 @@ class FoxholeAPI {
      */
     getCasualties() {
         let data = JSON.parse(readFileSync(path.join(__dirname, '/data/casualties.json')));
-        data.total.wardens = 0; data.total.wardens = 0; data.total.combined = 0;
+        data.total.wardens = 0; data.total.colonials = 0; data.total.combined = 0;
 
         const promise = new Promise((resolve) => {
             this.getMaps().then(async (maps) => {
