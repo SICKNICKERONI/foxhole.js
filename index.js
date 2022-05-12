@@ -43,7 +43,9 @@ class FoxholeAPI {
     }
 
     /**
+     * @param {string} map Map name you want data from.
      * 
+     * This returns a promise with the war report for the specified map.
      */
 
     getWarReport(map) {
@@ -67,7 +69,7 @@ class FoxholeAPI {
             const stringified = JSON.stringify(data, null, 4);
             writeFileSync(path.join(__dirname, '/data/casualties.json'), stringified);
 
-            resolve(data);
+            resolve(data.maps[map]);
         });
 
         return promise;
@@ -78,19 +80,38 @@ class FoxholeAPI {
      * 
      * This returns map data that may change throughout the war's cycle.
      */
-    async getDynamicMapData(map) {
-        const response = await fetch(`${this.rootURL}/worldconquest/maps/${map}/dynamic/public`);
-        const data =  await response.json();
+    getDynamicMapData(map) {
+        let data = readFileSync(path.join(__dirname, '/data/dynamic.json'));
 
-        console.log(response.headers);
+        const promise = new Promise(async (resolve) => {
+            const etag = Object.hasOwn(data.maps, map.etag) ? data.maps[map].etag : '';
+            const response = await fetch(`${this.rootURL}/worldconquest/maps/${map}/dynamic/public`, { headers: { 'If-None-Match': etag } });
+            if (response.status === 200) {
+                const report = await response.json();
 
-        return data;
+                Object.assign(data.maps, { [map]: {
+                    regionId: report.regionId,
+                    scorchedVictoryTowns: report.scorchedVictoryTowns,
+                    version: report.version,
+                    lastUpdated: report.lastUpdated,
+                    mapItems: report.mapItems,
+                    mapTextItems: report.mapTextItems
+                }});
+            }
+
+            const stringified = JSON.stringify(data, null, 4);
+            writeFileSync(path.join(__dirname, '/data/dynamic.json'), stringified);
+
+            resolve(data.maps[map]);
+        });
+
+        return promise;
     }
 
     /**
      * @param {string} map Map name you want data from.
      * 
-     * This returns map data that doesn't change throughout the war's cycle.
+     * This returns a promise containing map data that doesn't change throughout the war's cycle.
      */
     async getStaticMapData(map) {
         const response = await fetch(`${this.rootURL}/worldconquest/maps/${map}/static`);
@@ -110,7 +131,7 @@ class FoxholeAPI {
             this.getMaps().then(async (maps) => {
                 for (const map of maps) {
                     const etag = Object.hasOwn(data.maps, map.etag) ? data.maps[map].etag : '';
-                    const response = await fetch(`${this.rootURL}/worldconquest/warReport/${map}`, { headers: { 'If-None-Match': etag }});
+                    const response = await fetch(`${this.rootURL}/worldconquest/warReport/${map}`, { headers: { 'If-None-Match': etag } });
                     if (response.status === 200) {
                         const report = await response.json();
                     

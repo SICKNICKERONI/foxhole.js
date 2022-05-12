@@ -1,6 +1,9 @@
 const FoxholeAPI = require('./index.js');
 const foxhole = new FoxholeAPI();
 
-foxhole.getDynamicMapData("HowlCountyHex").then(data => {
-    console.log(data);
+foxhole.getMaps().then(map => {
+    foxhole.getDynamicMapData(map[1]).then(data => {
+        console.log(data);
+    });
 })
+    
