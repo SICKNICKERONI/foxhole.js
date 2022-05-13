@@ -1,7 +1,10 @@
 # foxhole.js
 
 This is an **unofficial** API wrapper for the game 'Foxhole'
+
 You can find the game here: [Foxhole Game Steam Page](https://store.steampowered.com/app/505460/Foxhole/)
+
+You can find everything relating to the API here: [Foxhole Game API](https://github.com/clapfoot/warapi)
 
 ## Install
 
@@ -9,7 +12,7 @@ To use this wrapper you can install it with `npm`.
 ```
 npm install foxhole.js
 ```
-> Note: You must have NodeJS version 17.5 or greater to use this package as it uses then experimental NodeJS Core fetch() API
+> Note: You must have NodeJS version 17.5 or greater to use this package as it uses the NodeJS fetch() API
 
 ## Usage
 
@@ -17,6 +20,7 @@ npm install foxhole.js
 const Foxhole = require('foxhole.js');
 const foxhole = new Foxhole(); // Use 'LIVE1', 'LIVE2', or 'DEV' to access the different shards. (Optionally leave blank to default to 'LIVE1')
 ```
+> Note: EVERYTHING returns a promise!
 
 ### Examples
 
@@ -49,6 +53,26 @@ foxhole.getMaps().then((maps) => {
     console.log(maps); // Alternatively, do something else here.
 });
 ```
+
+### Functions
+
+Gets current state of the war.
+``getState()``
+
+Gets an array of all map (hex) names.
+``getMaps()``
+
+Gets the war report for the specified map (hex).
+``getWarReport(map)``
+
+Gets the dynamic map data for the specified map (hex).
+``getDynamicMapData(map)``
+
+Gets the static map data for the specified map (hex).
+``getStaticMapData(map)``
+
+Does the same thing as ``getWarReport(map)`` but for every map (hex) and also returns an object with combined casualties.
+``getCasualties``
 
 ## Extra Information
 

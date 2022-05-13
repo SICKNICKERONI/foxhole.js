@@ -78,10 +78,10 @@ class FoxholeAPI {
     /**
      * @param {string} map Map name you want data from.
      * 
-     * This returns map data that may change throughout the war's cycle.
+     * This returns a promise containing map data that may change throughout the war's cycle.
      */
     getDynamicMapData(map) {
-        let data = readFileSync(path.join(__dirname, '/data/dynamic.json'));
+        let data = JSON.parse(readFileSync(path.join(__dirname, '/data/dynamic.json')));
 
         const promise = new Promise(async (resolve) => {
             const etag = Object.hasOwn(data.maps, map.etag) ? data.maps[map].etag : '';
@@ -95,7 +95,8 @@ class FoxholeAPI {
                     version: report.version,
                     lastUpdated: report.lastUpdated,
                     mapItems: report.mapItems,
-                    mapTextItems: report.mapTextItems
+                    mapTextItems: report.mapTextItems,
+                    etag: response.headers.get('etag')
                 }});
             }
 
@@ -104,7 +105,7 @@ class FoxholeAPI {
 
             resolve(data.maps[map]);
         });
-
+        
         return promise;
     }
 

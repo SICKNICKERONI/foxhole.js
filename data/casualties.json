@@ -1,13 +1,5 @@
 {
-    "maps": {
-        "HowlCountyHex": {
-            "wardenCasualties": 328,
-            "colonialCasualties": 15,
-            "totalEnlistments": 2013,
-            "dayOfWar": 199,
-            "etag": "\"217\""
-        }
-    },
+    "maps": {},
     "total": {
         "wardens": 0,
         "colonials": 0,
