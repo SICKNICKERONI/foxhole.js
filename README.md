@@ -72,7 +72,7 @@ Gets the static map data for the specified map (hex).
 ``getStaticMapData(map)``
 
 Does the same thing as ``getWarReport(map)`` but for every map (hex) and also returns an object with combined casualties.
-``getCasualties``
+``getCasualties()``
 
 ## Extra Information
 
