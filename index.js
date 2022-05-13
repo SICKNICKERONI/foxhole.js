@@ -43,6 +43,85 @@ class FoxholeAPI {
     }
 
     /**
+     * @param {string} map Map name you want data from.
+     * 
+     * This returns a promise with the war report for the specified map.
+     */
+
+    getWarReport(map) {
+        let data = JSON.parse(readFileSync(path.join(__dirname, '/data/casualties.json')));
+
+        const promise = new Promise(async (resolve) => {
+            const etag = Object.hasOwn(data.maps, map.etag) ? data.maps[map].etag : '';
+            const response = await fetch(`${this.rootURL}/worldconquest/warReport/${map}`, { headers: { 'If-None-Match': etag }});
+            if (response.status === 200) {
+                const report = await response.json();
+
+                Object.assign(data.maps, { [map]: {
+                    wardenCasualties: report.wardenCasualties,
+                    colonialCasualties: report.colonialCasualties,
+                    totalEnlistments: report.totalEnlistments,
+                    dayOfWar: report.dayOfWar,
+                    etag: response.headers.get('etag') 
+                }})
+            }
+
+            const stringified = JSON.stringify(data, null, 4);
+            writeFileSync(path.join(__dirname, '/data/casualties.json'), stringified);
+
+            resolve(data.maps[map]);
+        });
+
+        return promise;
+    }
+
+    /**
+     * @param {string} map Map name you want data from.
+     * 
+     * This returns a promise containing map data that may change throughout the war's cycle.
+     */
+    getDynamicMapData(map) {
+        let data = JSON.parse(readFileSync(path.join(__dirname, '/data/dynamic.json')));
+
+        const promise = new Promise(async (resolve) => {
+            const etag = Object.hasOwn(data.maps, map.etag) ? data.maps[map].etag : '';
+            const response = await fetch(`${this.rootURL}/worldconquest/maps/${map}/dynamic/public`, { headers: { 'If-None-Match': etag } });
+            if (response.status === 200) {
+                const report = await response.json();
+
+                Object.assign(data.maps, { [map]: {
+                    regionId: report.regionId,
+                    scorchedVictoryTowns: report.scorchedVictoryTowns,
+                    version: report.version,
+                    lastUpdated: report.lastUpdated,
+                    mapItems: report.mapItems,
+                    mapTextItems: report.mapTextItems,
+                    etag: response.headers.get('etag')
+                }});
+            }
+
+            const stringified = JSON.stringify(data, null, 4);
+            writeFileSync(path.join(__dirname, '/data/dynamic.json'), stringified);
+
+            resolve(data.maps[map]);
+        });
+        
+        return promise;
+    }
+
+    /**
+     * @param {string} map Map name you want data from.
+     * 
+     * This returns a promise containing map data that doesn't change throughout the war's cycle.
+     */
+    async getStaticMapData(map) {
+        const response = await fetch(`${this.rootURL}/worldconquest/maps/${map}/static`);
+        const data = await response.json();
+
+        return data;
+    }
+
+    /**
      * This returns a promise containing data for casualties.
      */
     getCasualties() {
@@ -53,11 +132,17 @@ class FoxholeAPI {
             this.getMaps().then(async (maps) => {
                 for (const map of maps) {
                     const etag = Object.hasOwn(data.maps, map.etag) ? data.maps[map].etag : '';
-                    const response = await fetch(`${this.rootURL}/worldconquest/warReport/${map}`, { headers: { 'If-None-Match': etag }});
+                    const response = await fetch(`${this.rootURL}/worldconquest/warReport/${map}`, { headers: { 'If-None-Match': etag } });
                     if (response.status === 200) {
-                        const { wardenCasualties, colonialCasualties } = await response.json();
+                        const report = await response.json();
                     
-                        Object.assign(data.maps, { [map]: { wardens: wardenCasualties, colonials: colonialCasualties, etag: response.headers.get('etag') } });
+                        Object.assign(data.maps, { [map]: {
+                            wardenCasualties: report.wardenCasualties,
+                            colonialCasualties: report.colonialCasualties,
+                            totalEnlistments: report.totalEnlistments,
+                            dayOfWar: report.dayOfWar,
+                            etag: response.headers.get('etag') 
+                        }})
                     }
                 }
                 for (const [key, value] of Object.entries(data.maps)) {
