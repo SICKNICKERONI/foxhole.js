@@ -18,13 +18,13 @@ npm install foxhole.js
 
 ```js
 const Foxhole = require('foxhole.js');
-const foxhole = new Foxhole(); // Use 'LIVE1', 'LIVE2', or 'DEV' to access the different shards. (Optionally leave blank to default to 'LIVE1')
+const foxhole = new Foxhole(); // Use 'LIVE1'/'ABLE', 'LIVE2'/'BAKER', 'LIVE3'/'CHARLIE', or 'DEV' to access the different shards. (Optionally leave blank to default to 'LIVE1')
 ```
 > Note: EVERYTHING returns a promise!
 
 ### Examples
 
-This gets current war info about the war.
+This gets the current war state.
 ```js
 const Foxhole = require('foxhole.js');
 const foxhole = new Foxhole();
@@ -34,7 +34,7 @@ foxhole.getState().then((info) => {
 });
 ```
 
-This gets the current amount of casualties.
+This get the casualties across all maps (hexes) and sums them up.
 ```js
 const Foxhole = require('foxhole.js');
 const foxhole = new Foxhole();
@@ -54,7 +54,7 @@ foxhole.getMaps().then((maps) => {
 });
 ```
 
-### Functions
+### API Methods
 
 Gets current state of the war.
 ``getState()``
@@ -71,12 +71,16 @@ Gets the dynamic map data for the specified map (hex).
 Gets the static map data for the specified map (hex).
 ``getStaticMapData(map)``
 
-Does the same thing as ``getWarReport(map)`` but for every map (hex) and also returns an object with combined casualties.
+### Convenience Methods
+
+Gets the war report for each map and sums up the casualties.
 ``getCasualties()``
 
 ## Extra Information
 
-Please contact me on Discord, make an issue, or make a pull request if you run into any problems using this.
-Discord: SICKNICKERONI#2437
+1/19/2024
+While I doubt many used this module in their projects however, if you did, I salute you.
+I apologize for not updating the project frequently and I will work to keep up with the API and expansion of the game.
 
-*This project is in an early state and I plan to update this quite frequently.*
+Please contact me on Discord, make an issue, or make a pull request if you run into any problems using this.
+Discord: sicknickeroni
