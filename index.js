@@ -1,27 +1,28 @@
-// Caching objects
-let casualties = {
-    maps: {},
-    total: {
-        wardens: 0,
-        colonials: 0,        
-        combined: 0
-    }
-};
-let dynamic = {
-    maps: {}
-};
-
-
 class FoxholeAPI {
     
     /**
      * @param {string} shard The shard you want to get info from. (e.g 'LIVE1' or leave blank, 'LIVE2', 'LIVE3', or 'DEV')
      * 
      * Constructor for the FoxholeAPI class.
-     */
-    constructor(shard) {
-        const lowerShard = shard ? shard.toLowerCase() : false;
-        switch(true) {
+    */
+   constructor(shard) {
+       const lowerShard = shard ? shard.toLowerCase() : false;
+       // Caching objects
+       this.casualties = {
+           maps: {},
+           total: {
+               wardens: 0,
+               colonials: 0,        
+               combined: 0
+           }
+       };
+       this.dynamic = {
+           maps: {}
+       };
+       this.state = {};
+       this.maps = [];
+       this.static = {};
+       switch(true) {
             case !lowerShard || ["live1", "able"].includes(lowerShard):
                 this.rootURL = 'https://war-service-live.foxholeservices.com/api';
                 break;
@@ -35,7 +36,7 @@ class FoxholeAPI {
                 this.rootURL = 'https://war-service-dev.foxholeservices.com/api';
                 break;
             default:
-                console.error("Invalid shard! Defaulting to LIVE1/ABLE.");
+                console.warn("Invalid shard! Defaulting to LIVE1/ABLE.");
                 this.rootURL = 'https://war-service-live.foxholeservices.com/api';
                 break;
         }
@@ -52,9 +53,14 @@ class FoxholeAPI {
      */
     async getState() {
         const response = await fetch(`${this.rootURL}/worldconquest/war`);
-        const data = await response.json();
+        if (response.ok) {
+            const data = await response.json();
+            
+            this.state = data;
+            return data;
+        }
 
-        return data;
+        return this.state;
     }
 
     /**
@@ -64,9 +70,14 @@ class FoxholeAPI {
      */
     async getMaps() {
         const response = await fetch(`${this.rootURL}/worldconquest/maps`);
-        const data = await response.json();
+        if (response.ok) {
+            const data = await response.json();
+    
+            this.maps = data;
+            return data;
+        }
 
-        return data;
+        return this.maps;
     }
 
     /**
@@ -78,12 +89,12 @@ class FoxholeAPI {
      */
 
     async getWarReport(map) {
-        const etag = Object.hasOwn(casualties.maps, casualties.etag) ? casualties.maps[map].etag : '';
+        const etag = Object.hasOwn(this.casualties.maps, this.casualties.etag) ? this.casualties.maps[map].etag : '';
         const response = await fetch(`${this.rootURL}/worldconquest/warReport/${map}`, { headers: { 'If-None-Match': etag } });
-        if (response.status === 200) {
+        if (response.ok) {
             const report = await response.json();
 
-            Object.assign(casualties.maps, {
+            Object.assign(this.casualties.maps, {
                 [map]: {
                     wardenCasualties: report.wardenCasualties,
                     colonialCasualties: report.colonialCasualties,
@@ -92,9 +103,11 @@ class FoxholeAPI {
                     etag: response.headers.get('etag')
                 }
             });
+
+            return this.casualties.maps[map];
         }
 
-        return casualties.maps[map];
+        return this.casualties.maps[map];
     }
 
     /**
@@ -105,12 +118,12 @@ class FoxholeAPI {
      * @returns Returns an object with the dynamic map data.
      */
     async getDynamicMapData(map) {
-        const etag = Object.hasOwn(dynamic.maps, map.etag) ? data.maps[map].etag : '';
+        const etag = Object.hasOwn(this.dynamic.maps, map.etag) ? data.maps[map].etag : '';
         const response = await fetch(`${this.rootURL}/worldconquest/maps/${map}/dynamic/public`, { headers: { 'If-None-Match': etag } });
-        if (response.status === 200) {
+        if (response.ok) {
                 const report = await response.json();
 
-                Object.assign(dynamic.maps, { [map]: {
+                Object.assign(this.dynamic.maps, { [map]: {
                     regionId: report.regionId,
                     scorchedVictoryTowns: report.scorchedVictoryTowns,
                     version: report.version,
@@ -121,7 +134,7 @@ class FoxholeAPI {
                 }});
             }
         
-        return dynamic.maps[map];
+        return this.dynamic.maps[map];
     }
 
     /**
@@ -133,9 +146,14 @@ class FoxholeAPI {
      */
     async getStaticMapData(map) {
         const response = await fetch(`${this.rootURL}/worldconquest/maps/${map}/static`);
-        const data = await response.json();
+        if (response.ok) {
+            const data = await response.json();
+            
+            this.static = data;
+            return data;
+        }
 
-        return data;
+        return this.static;
     }
 
     //---------------------//
@@ -148,20 +166,20 @@ class FoxholeAPI {
      * @returns Returns an object with the summed up casualties.
      */
     async getCasualties() {
-        casualties.total.wardens = 0; casualties.total.colonials = 0; casualties.total.combined = 0;
+        this.casualties.total.wardens = 0; this.casualties.total.colonials = 0; this.casualties.total.combined = 0;
 
         const maps = await this.getMaps()
         for (const map of maps) {
             await this.getWarReport(map);
         }
 
-        for (const [key, value] of Object.entries(casualties.maps)) {
-            casualties.total.wardens += value.wardenCasualties;
-            casualties.total.colonials += value.colonialCasualties;
-            casualties.total.combined += value.wardenCasualties + value.colonialCasualties;
+        for (const [key, value] of Object.entries(this.casualties.maps)) {
+            this.casualties.total.wardens += value.wardenCasualties;
+            this.casualties.total.colonials += value.colonialCasualties;
+            this.casualties.total.combined += value.wardenCasualties + value.colonialCasualties;
         }
 
-        return casualties.total;
+        return this.casualties.total;
     }
 }
 
