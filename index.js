@@ -89,7 +89,7 @@ class FoxholeAPI {
      */
 
     async getWarReport(map) {
-        const etag = Object.hasOwn(this.casualties.maps, this.casualties.etag) ? this.casualties.maps[map].etag : '';
+        const etag = this.casualties.maps[map]?.etag ? this.casualties.maps[map].etag : '';
         const response = await fetch(`${this.rootURL}/worldconquest/warReport/${map}`, { headers: { 'If-None-Match': etag } });
         if (response.ok) {
             const report = await response.json();
@@ -118,7 +118,7 @@ class FoxholeAPI {
      * @returns Returns an object with the dynamic map data.
      */
     async getDynamicMapData(map) {
-        const etag = Object.hasOwn(this.dynamic.maps, map.etag) ? data.maps[map].etag : '';
+        const etag = this.dynamic.maps[map]?.etag ? this.dynamic.maps[map].etag : '';
         const response = await fetch(`${this.rootURL}/worldconquest/maps/${map}/dynamic/public`, { headers: { 'If-None-Match': etag } });
         if (response.ok) {
                 const report = await response.json();
@@ -133,7 +133,7 @@ class FoxholeAPI {
                     etag: response.headers.get('etag')
                 }});
             }
-        
+            
         return this.dynamic.maps[map];
     }
 
