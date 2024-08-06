@@ -1,3 +1,4 @@
+
 # foxhole.js
 
 This is an **unofficial** API wrapper for the game 'Foxhole'
@@ -6,21 +7,16 @@ You can find the game here: [Foxhole Game Steam Page](https://store.steampowered
 
 You can find everything relating to the API here: [Foxhole Game API](https://github.com/clapfoot/warapi)
 
----
-
 ## Install
 
 To use this wrapper you can install it with `npm`.
 
 ```
-
 npm install foxhole.js
 
 ```
 
 > Note: You must have NodeJS version 17.5 or greater to use this package as it uses the NodeJS fetch() API
-
----
 
 ## Usage
 
@@ -52,26 +48,27 @@ This get the casualties across all maps (hexes) and sums them up.
 // Import...
 
 const casualties = await client.getTotalCasualties(); // Or use .then()
-});
 ```
-
----
 
 ## API Methods
 
-### `getWarState()`
+`getWarState()`
 
 Gets the current state of the war.
 
 **Returns:** `Promise<CachedWarState | null>`
 
-### `getMapIDs()`
+<br>
+
+ `getMapIDs()`
 
 Gets an array of all map (hex) IDs.
 
 **Returns:** `Promise<CachedMapIDs | null>`
 
-### `getWarReport(mapID: string)`
+<br>
+
+ `getWarReport(mapID: string)`
 
 Gets the war report for the specified map (hex).
 
@@ -81,7 +78,9 @@ Gets the war report for the specified map (hex).
 
 **Returns:** `Promise<CachedWarReportElement | null>`
 
-### `getMapData(mapID: string, type: 'DYNAMIC' | 'STATIC')`
+<br>
+
+ `getMapData(mapID: string, type: 'DYNAMIC' | 'STATIC')`
 
 Gets the map data for the specified map (hex).
 
@@ -92,11 +91,9 @@ Gets the map data for the specified map (hex).
 
 **Returns:** `Promise<CachedMapDataElement | null>`
 
----
-
 ## Helper Methods
 
-### `getCasualties(mapID: string)`
+ `getCasualties(mapID: string)`
 
 Gets the casualties for the given map ID.
 
@@ -106,13 +103,17 @@ Gets the casualties for the given map ID.
 
 **Returns:** `Promise<CasualtyData | null>`
 
-### `getTotalCasualties()`
+<br>
+
+ `getTotalCasualties()`
 
 Gets the total casualties across all maps.
 
 **Returns:** `Promise<CasualtyData | null>`
 
-### `getVictoryTown(mapID: string)`
+<br>
+
+ `getVictoryTown(mapID: string)`
 
 Gets the victory town in the given map ID.
 
@@ -122,29 +123,33 @@ Gets the victory town in the given map ID.
 
 **Returns:** `Promise<MapItemAndText | null>`
 
-### `getAllVictoryTowns()`
+<br>
+
+ `getAllVictoryTowns()`
 
 Gets every victory town across all maps.
 
 **Returns:** `Promise<MapItemAndText[] | null>`
 
-### `getTrueRequiredVictoryTowns()`
+<br>
+
+ `getTrueRequiredVictoryTowns()`
 
 Gets the true amount of required victory towns to win the war.
 
 **Returns:** `Promise<number | null>`
 
-### `getClaimedVictoryTowns()`
+<br>
+
+ `getClaimedVictoryTowns()`
 
 Gets the number of victory towns each team owns.
 
 **Returns:** `Promise<ClaimedVictoryTownData | null>`
 
----
+## Miscellaneous Helper Methods
 
-## Miscellaneous Methods
-
-### `getMapTextItemForMapItem(mapID: string, mapItem: MapItem, filters?: MapTextFromMapItemFilter)`
+ `getMapTextItemForMapItem(mapID: string, mapItem: MapItem, filters?: MapTextFromMapItemFilter)`
 
 Gets a map text item given a map item.
 
@@ -156,7 +161,9 @@ Gets a map text item given a map item.
 
 **Returns:** `Promise<MapTextItem | null>`
 
-### `readMapItemFlags(mapItem: MapItem)` (Static)
+<br>
+
+**(Static)** `readMapItemFlags(mapItem: MapItem)`
 
 Processes the flags value of a map item.
 
